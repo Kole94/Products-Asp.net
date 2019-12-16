@@ -48,45 +48,30 @@ namespace WirelessMedia.Controllers
         // GET: Home/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var productToEdit = (from m in db.Products
+                               where m.Id == id
+                               select m).First();
+
+            return View(productToEdit);
         }
 
         // POST: Home/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(Products productToEdit)
         {
-            try
-            {
-                // TODO: Add update logic here
+            var originalProduct = (from m in db.Products
+                                   where m.Id == productToEdit.Id
+                                 select m).First();
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
+            if (!ModelState.IsValid)
+                return View(originalProduct);
+
+            db.Entry(originalProduct).CurrentValues.SetValues(productToEdit);
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
-        // GET: Home/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: Home/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
     }
 }
